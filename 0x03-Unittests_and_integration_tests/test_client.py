@@ -53,3 +53,42 @@ class TestGithubOrgClient(unittest.TestCase):
         res = GithubOrgClient("google")
         client_licence = res.has_license(repo, key)
         self.assertEqual(client_licence, expected)
+
+
+class TestIntegrationGithubOrgClient(unittest.TestCase):
+    """define testintegrationgithuborgclient class"""
+    @classmethod
+    def setUpClass(cls):
+        """function that run set up before test"""
+        conf = {"return_value.json.side_effect": [
+            cls.org_payload, cls.repos_payload,
+            cls.org_payload, cls.repos_payload
+        ]}
+
+        cls.get_patcher = patch('requests.get', **conf)
+        cls.mock = cls.get_patcher.start()
+
+    def test_public_repo(self):
+        """function that integration test public repo"""
+        mytest_class = GithubOrgClient('Google')
+
+        self.assertEqual(mytest_class.org, self.org_payload)
+        self.assertEqual(mytest_class.repos_payload, self.repos_payload)
+        self.assertEqual(mytest_class.public_repos(), self.expected_repos)
+        self.assertEqual(mytest_class.public_repos("XLICENSE"), [])
+        self.mock.assert_called()
+
+    def test_public_repos_with_license(self):
+        """function integration test repos with License"""
+        mytest_class = GithubOrgClient("google")
+
+        self.assertEqual(mytest_class.public_repos(), self.expected_repos)
+        self.assertEqual(mytest_class.public_repos("XLICENSE"), [])
+        self.assertEqual(mytest_class.public_repos(
+            "apache-2.0"), self.apache2_repos)
+        self.mock.assert_called()
+
+    @classmethod
+    def tearDownClass(cls):
+        """function that run after test"""
+        cls.get_patcher.stop()
