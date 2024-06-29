@@ -28,19 +28,18 @@ class TestGithubOrgClient(unittest.TestCase):
             self.assertEqual(res, payload["repos_url"])
 
     @patch("client.get_json")
-    def test_public_repos(self, mock_json: MagicMock) -> None:
+    def test_public_repos(self, mymock_json: MagicMock) -> None:
         """function to test public repos"""
-        payloads = [{"name": "google"}, {"name": "Twitter"}]
-        mock_json.return_value = payloads
+        mypayloads = [{"name": "google"}, {"name": "Twitter"}]
+        mymock_json.return_value = mypayloads
 
-        with patch('client.GithubOrgClient._public_repos_url') as mock_public:
-            mock_public.return_value = "hey there!"
-            test_class = GithubOrgClient('test')
-            result = test_class.public_repos()
+        with patch("client.GithubOrgClient._public_repos_url") as mymock_pub:
+            mymock_pub.return_value = "hey there!"
+            mytest_class = GithubOrgClient("test")
+            res = mytest_class.public_repos()
 
-            expected = [p["name"] for p in payloads]
-            self.assertEqual(result, expected)
+            exp = [p["name"] for p in mypayloads]
+            self.assertEqual(res, exp)
 
-            mock_json.called_with_once()
-            mock_public.called_with_once()
-
+            mymock_json.called_with_once()
+            mymock_pub.called_with_once()
