@@ -30,16 +30,17 @@ class TestGithubOrgClient(unittest.TestCase):
     @patch("client.get_json")
     def test_public_repos(self, mymock_json: MagicMock) -> None:
         """function to test public repos"""
-        mypayloads = [{"name": "google"}, {"name": "Twitter"}]
-        mymock_json.return_value = mypayloads
+        payloads = [{"name": "google"}, {"name": "Twitter"}]
+        mock_json.return_value = payloads
 
-        with patch("client.GithubOrgClient._public_repos_url") as mymock_pub:
-            mymock_pub.return_value = "hey there!"
-            mytest_class = GithubOrgClient("test")
-            res = mytest_class.public_repos()
+        with patch('client.GithubOrgClient._public_repos_url') as mock_public:
+            mock_public.return_value = "hey there!"
+            test_class = GithubOrgClient('test')
+            result = test_class.public_repos()
 
-            exp = [p["name"] for p in mypayloads]
-            self.assertEqual(res, exp)
+            expected = [p["name"] for p in payloads]
+            self.assertEqual(result, expected)
 
-            mymock_json.called_with_once()
-            mymock_pub.called_with_once()
+            mock_json.called_with_once()
+            mock_public.called_with_once()
+
